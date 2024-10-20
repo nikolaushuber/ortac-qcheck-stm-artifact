@@ -1,0 +1,23 @@
+(executable
+ (name cli)
+ (public_name ortac)
+ (modules sites cli)
+ (package ortac-core)
+ (libraries
+  dune-build-info
+  dune-site.plugins
+  cmdliner
+  fmt
+  gospel
+  registration))
+
+(library
+ (public_name ortac-core.register)
+ (name registration)
+ (modules registration)
+ (libraries cmdliner fmt.tty fmt.cli))
+
+(generate_sites_module
+ (module sites)
+ (plugins
+  (ortac-core plugins)))

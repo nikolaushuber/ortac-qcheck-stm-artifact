@@ -1,0 +1,46 @@
+(include dune.inc)
+
+(cram
+ (package ortac-qcheck-stm)
+ (deps
+  (package ortac-core)
+  (package ortac-qcheck-stm)))
+
+(rule
+ (package ortac-qcheck-stm)
+ (deps
+  (package ortac-core)
+  (package ortac-qcheck-stm))
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (ignore-stdout
+    (with-stderr-to
+     all_warnings_errors
+     (run
+      ortac
+      qcheck-stm
+      %{dep:all_warnings.mli}
+      %{dep:all_warnings_config.ml}))))))
+
+(rule
+ (alias runtest)
+ (package ortac-qcheck-stm)
+ (action
+  (diff all_warnings_errors.expected all_warnings_errors)))
+
+(executable
+ (name dune_gen)
+ (modules dune_gen))
+
+(rule
+ (action
+  (with-stdout-to
+   dune.inc.gen
+   (run ./dune_gen.exe %{read-lines:dune_gen.args}))))
+
+(rule
+ (alias runtest)
+ (action
+  (diff dune.inc dune.inc.gen)))
