@@ -42,7 +42,6 @@ val push_front : 'a t -> 'a elt -> unit
     modifies t.contents
     ensures t.contents = Sequence.cons (proj x) (old t.contents) *)
 
-
 val pop_front : 'a t -> 'a elt
 (** [pop_front t] removes and returns the leftmost element at position [0] of
     the varray [t]. Every element of [t] is shifted one to the right.

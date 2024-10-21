@@ -1,0 +1,99 @@
+(library
+ (name hashtbl)
+ (modules hashtbl))
+
+(rule
+ (alias runtest)
+ (deps
+  (package ortac-qcheck-stm))
+ (targets hashtbl_tests.ml)
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (with-stdout-to
+    %{targets}
+    (run
+     ortac
+     qcheck-stm
+     %{dep:hashtbl.mli}
+     %{dep:hashtbl_config.ml}
+     --quiet)))))
+
+(executable
+ (public_name hashtbl_tests)
+ (package artifact)
+ (modules hashtbl_tests)
+ (libraries
+  hashtbl
+  qcheck-stm.stm
+  qcheck-stm.sequential
+  qcheck-multicoretests-util
+  ortac-runtime-qcheck-stm))
+
+(library
+ (name varray_spec)
+ (modules varray_spec)
+ (libraries varray))
+
+(rule
+ (alias runtest)
+ (deps
+  (package ortac-qcheck-stm))
+ (targets varray_spec_tests.ml)
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (with-stdout-to
+    %{targets}
+    (run
+     ortac
+     qcheck-stm
+     %{dep:varray_spec.mli}
+     %{dep:varray_spec_config.ml}
+     --quiet)))))
+
+(executable
+ (public_name varray_spec_tests)
+ (modules varray_spec_tests)
+ (libraries
+  varray_spec
+  qcheck-stm.stm
+  qcheck-stm.sequential
+  qcheck-multicoretests-util
+  ortac-runtime-qcheck-stm))
+
+(library
+ (name bitv_spec)
+ (modules bitv_spec)
+ (libraries bitv))
+
+(rule
+ (alias runtest)
+ (deps
+  (package ortac-qcheck-stm))
+ (targets bitv_spec_tests.ml)
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (with-stdout-to
+    %{targets}
+    (run
+     ortac
+     qcheck-stm
+     %{dep:bitv_spec.mli}
+     %{dep:bitv_spec_config.ml}
+     --quiet)))))
+
+(executable
+ (public_name bitv_spec_tests)
+ (modules bitv_spec_tests)
+ (package artifact)
+ (libraries
+  bitv_spec
+  qcheck-stm.stm
+  qcheck-stm.sequential
+  qcheck-multicoretests-util
+  ortac-runtime-qcheck-stm))

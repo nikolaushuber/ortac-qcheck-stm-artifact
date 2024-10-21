@@ -169,6 +169,7 @@ val map : (bool -> bool) -> t -> t
     by [f]. *)
 
 val iteri : (int -> bool -> unit) -> t -> unit
+
 val mapi : (int -> bool -> bool) -> t -> t
 (** [Bitv.iteri] and [Bitv.mapi] are similar to [Bitv.iter]
     and [Bitv.map] respectively, but the function is applied to the
@@ -190,7 +191,7 @@ val foldi_right : (int -> bool -> 'a -> 'a) -> t -> 'a -> 'a
 
 (** {2 Pop count and other iterations} *)
 
-val pop: t -> int
+val pop : t -> int
 (** Population count, i.e., number of 1 bits *)
 (*@ r = pop v
     ensures r = population v.bits *)
@@ -217,7 +218,7 @@ val bw_and : t -> t -> t
     ensures r.size = v1.size
     ensures r.bits = map2 op_and v1.bits v2.bits *)
 
-val bw_or  : t -> t -> t
+val bw_or : t -> t -> t
 (** bitwise OR;
     raises [Invalid_argument] if the two vectors do not have the same length *)
 (*@ r = bw_or v1 v2
@@ -297,7 +298,7 @@ val all_zeros : t -> bool
 (*@ r = all_zeros v
     ensures r = not (Sequence.fold_left op_or false v.bits)*)
 
-val all_ones  : t -> bool
+val all_ones : t -> bool
 (** returns [true] if and only if the vector only contains ones *)
 (*@ r = all_ones v
     ensures r = Sequence.fold_left op_and true v.bits *)
