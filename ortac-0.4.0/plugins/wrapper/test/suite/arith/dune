@@ -1,6 +1,0 @@
-(library
- (name arith)
- (flags :standard -w -27-11)
- (libraries ortac-runtime))
-
-(include ../dune.common)

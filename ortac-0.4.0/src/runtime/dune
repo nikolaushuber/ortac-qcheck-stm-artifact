@@ -1,4 +1,0 @@
-(library
- (name ortac_runtime)
- (public_name ortac-runtime)
- (libraries fmt zarith))
