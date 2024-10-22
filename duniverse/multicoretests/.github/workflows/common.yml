@@ -1,0 +1,164 @@
+name: Common CI workflow
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: 'Type of machine + OS on which to run the tests'
+        type: string
+        default: 'ubuntu-latest'
+      options:
+        description: >-
+          Configuration options for the compiler.
+          Space-separated list of '32bit', 'bytecode-only', 'fp'.
+        type: string
+        default: ''
+      platform:
+        description: 'Platform. One of: linux, macos, msvc, mingw, cygwin.'
+        type: string
+        default: 'linux'
+      timeout:
+        description: 'Timeout'
+        type: number
+        default: 180
+      dune_profile:
+        description: 'Dune profile to use'
+        type: string
+        default: 'dev'
+      runparam:
+        description: 'OCAMLRUNPARAM to use'
+        type: string
+        default: ''
+      dune_alias:
+        description: 'dune alias that should be built in the main step'
+        type: string
+        default: 'testsuite'
+      compiler_repository:
+        description: 'Repository from which to fetch the compiler'
+        type: string
+        default: 'ocaml/ocaml'
+      compiler_ref:
+        description: 'Git reference to use'
+        type: string
+        required: true
+
+permissions: {}
+
+jobs:
+  test:
+    env:
+      QCHECK_MSG_INTERVAL:      '60'
+      OCAML_OPTIONS:            ${{ inputs.options }}
+      OCAML_PLATFORM:           ${{ inputs.platform }}
+      DUNE_PROFILE:             ${{ inputs.dune_profile }}
+      OCAMLRUNPARAM:            ${{ inputs.runparam }}
+      DUNE_CI_ALIAS:            ${{ inputs.dune_alias }}
+      COMPILER_REPO:            ${{ inputs.compiler_repository }}
+      COMPILER_REF:             ${{ inputs.compiler_ref }}
+      LOGBEGINGRP:              "::group::"
+      LOGENDGRP:                "::endgroup::"
+
+      # For the record, PR 12345 of the compiler can be tested simply by setting
+      # COMPILER_REF:             'refs/pull/12345/head'
+
+    runs-on: ${{ inputs.runs_on }}
+
+    timeout-minutes: ${{ inputs.timeout }}
+
+    steps:
+      - name: Configure EOLs on Cygwin
+        run: |
+          # Ensure that .expected files are not modified by check out
+          # as, in Cygwin, the .expected should use LF line endings,
+          # rather than Windows’ CRLF
+          git config --global core.autocrlf input
+        if: inputs.platform == 'cygwin'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: multicoretests
+
+      - name: Fetch QCheck
+        uses: actions/checkout@v4
+        with:
+          repository: c-cube/qcheck
+          ref: v0.22
+          path: multicoretests/qcheck
+
+      - name: Pre-Setup
+        run: |
+          bash multicoretests/.github/runner.sh setup
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        if: inputs.platform == 'msvc'
+
+      - name: Restore cache
+        uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: |
+            ${{ env.PREFIX }}
+            C:\cygwin-packages
+          key: ${{ env.cache_key }}
+
+      - name: Install Cygwin (Windows only)
+        uses: cygwin/cygwin-install-action@v4
+        with:
+          packages: make,bash${{ inputs.platform == 'mingw' && ',mingw64-x86_64-gcc-core,mingw64-x86_64-gcc-g++' || '' }}${{ inputs.platform == 'cygwin' && ',gcc-core' }}
+          install-dir: 'D:\cygwin'
+        if: runner.os == 'Windows'
+
+      - name: Fetch OCaml
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.COMPILER_REPO }}
+          ref: ${{ env.COMPILER_REF }}
+          path: ocaml
+          submodules: true
+        if: steps.cache.outputs.cache-hit != 'true' || inputs.platform == 'msvc'
+        # We need to fetch OCaml in all cases for MSVC for msvs-promote-path
+
+      - name: Fetch dune
+        uses: actions/checkout@v4
+        with:
+          repository: ocaml/dune
+          ref: 3.16.0
+          path: dune
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Build and install OCaml and dune
+        run: |
+          bash multicoretests/.github/runner.sh ocaml
+          bash multicoretests/.github/runner.sh dune
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ env.PREFIX }}
+            C:\cygwin-packages
+          key: ${{ env.cache_key }}
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Show the configuration
+        run: |
+          bash multicoretests/.github/runner.sh show_config
+
+      - name: Build the test suite
+        run: |
+          bash multicoretests/.github/runner.sh build
+
+      - name: Run the internal package tests
+        run: |
+          bash multicoretests/.github/runner.sh internaltests
+
+      - name: Run the multicore test suite
+        run: |
+          bash multicoretests/.github/runner.sh testsuite

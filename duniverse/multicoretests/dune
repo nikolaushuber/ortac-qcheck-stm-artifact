@@ -1,0 +1,81 @@
+(env
+ (debug-runtime
+  (link_flags :standard -runtime-variant=d)
+  (env-vars
+   (MCTUTILS_TRUNCATE 50)))
+ (_
+  (env-vars
+   (MCTUTILS_TRUNCATE 50)))
+)
+
+(vendored_dirs qcheck)
+
+;; make `dune build` target a recursive default target
+(alias
+ (name default)
+ (package multicoretests)
+ (deps (alias src/default)))
+
+; The main test alias
+(alias
+ (name testsuite)
+ (package multicoretests)
+ (deps
+  (alias_rec src/runtest)))
+
+; The internal tests alias
+(alias
+ (name internaltests)
+ (package multicoretests)
+ (deps
+  (alias_rec test/runtest)))
+
+; The aliases to control what is run in CI
+; It can either be the full test suite, or focus on a single test
+(alias
+ (name ci)
+ (package multicoretests)
+ (deps
+  (alias_rec %{env:DUNE_CI_ALIAS=testsuite})))
+  ; (alias_rec focusedtest)))
+
+; @focusedtest
+; repeat a single test a couple of times
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; A rule to repeat the test executable given as dependency a couple of
+; times and report at the end whether this worked
+
+; To change the test to repeat, change the source of the `copy`:
+(rule
+ (copy src/io/lin_tests_domain.exe focusedtest.exe))
+
+(rule
+ (alias focusedtest)
+ (package multicoretests)
+ (deps focusedtest.exe)
+ (enabled_if (<> %{os_type} Win32))
+ (action
+  (no-infer
+   (progn
+    (write-file hoped "")
+    (write-file failed-runs "")
+    (bash
+     "for i in `seq 20`; do echo Starting $i-th run; if ! ./focusedtest.exe -v ; then echo $i >> failed-runs; fi; done")
+    ; edit the previous line to focus on a particular seed
+    (diff failed-runs hoped)))))
+
+(rule
+ (alias focusedtest)
+ (package multicoretests)
+ (deps focusedtest.exe)
+ (enabled_if (= %{os_type} Win32))
+ (action
+  (no-infer
+   (progn
+    (write-file hoped "")
+    (write-file failed-runs "")
+    (run cmd /q /c
+     "for %G in (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20) do (echo Starting %G-th run && focusedtest.exe -v || echo %G >> failed-runs)")
+    ; edit the previous line to focus on a particular seed
+    (diff failed-runs hoped)))))

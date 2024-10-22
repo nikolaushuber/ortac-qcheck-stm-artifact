@@ -1,0 +1,16 @@
+(test
+ (name test)
+ (package ortac-wrapper)
+ (deps
+  (source_tree translation/))
+ (libraries
+  alcotest
+  gospel
+  fmt
+  arrays
+  arith
+  exceptions
+  terms
+  ortac-runtime
+  ortac-core
+  ortac-wrapper.plugin))

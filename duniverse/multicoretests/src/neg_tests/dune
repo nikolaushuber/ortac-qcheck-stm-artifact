@@ -1,0 +1,129 @@
+;; Negative tests to confirm that approach works
+
+(library
+ (name stm_tests_spec_ref)
+ (modules stm_tests_spec_ref)
+ (package multicoretests)
+ (libraries qcheck-core qcheck-stm.stm)
+)
+
+(test
+ (name stm_tests_sequential_ref)
+ (modules stm_tests_sequential_ref)
+ (package multicoretests)
+ (libraries stm_tests_spec_ref qcheck-stm.sequential)
+ (action (run %{test} --verbose))
+)
+
+(test
+ (name stm_tests_domain_ref)
+ (modules stm_tests_domain_ref)
+ (package multicoretests)
+ (libraries stm_tests_spec_ref qcheck-stm.domain)
+ (action (run %{test} --verbose))
+)
+
+(test
+ (name stm_tests_domain_ref_asym)
+ (modules stm_tests_domain_ref_asym)
+ (package multicoretests)
+ (libraries stm_tests_spec_ref qcheck-stm.domain)
+ (action (run %{test} --verbose))
+)
+
+(test
+ (name stm_tests_thread_ref)
+ (modules stm_tests_thread_ref)
+ (package multicoretests)
+ (libraries stm_tests_spec_ref qcheck-stm.thread)
+ (action (run %{test} --verbose))
+)
+
+(library
+ (name CList)
+ (modules CList)
+ (package multicoretests)
+)
+
+(test
+ (name stm_tests_conclist)
+ (modules stm_tests_conclist)
+ (package multicoretests)
+ (libraries CList qcheck-stm.sequential qcheck-stm.domain)
+ (action (run %{test} --verbose))
+)
+
+;; Linearization tests of ref and Clist with Lin
+
+(library
+ (name lin_tests_common)
+ (modules lin_tests_common)
+ (package multicoretests)
+ (libraries CList qcheck-lin.lin)
+)
+
+(library
+ (name lin_internal_tests_common)
+ (modules lin_internal_tests_common)
+ (package multicoretests)
+ (libraries CList qcheck-lin.lin)
+)
+
+(test
+ (name lin_tests_domain)
+ (modules lin_tests_domain)
+ (package multicoretests)
+ (flags (:standard -w -27))
+ (libraries lin_tests_common qcheck-lin.domain)
+ (action (run %{test} --verbose))
+)
+
+(test
+ (name lin_tests_thread)
+ (modules lin_tests_thread)
+ (package multicoretests)
+ (flags (:standard -w -27))
+ (libraries lin_tests_common qcheck-lin.thread)
+ ; (action (run %{test} --verbose))
+ (action (progn))
+)
+
+(test
+ (name lin_tests_effect)
+ (modules lin_tests_effect)
+ (package multicoretests)
+ (flags (:standard -w -27))
+ (libraries lin_tests_common qcheck-lin.effect)
+ (action (run %{test} --verbose))
+)
+
+;; Linearization tests of ref and Clist with Lin.Internal
+
+(test
+ (name lin_internal_tests_domain)
+ (modules lin_internal_tests_domain)
+ (package multicoretests)
+ (flags (:standard -w -27))
+ (libraries lin_internal_tests_common qcheck-lin.domain)
+  ; (action (run %{test} --verbose))
+ (action (progn))
+)
+
+(tests
+ (names lin_internal_tests_thread_ref lin_internal_tests_thread_conclist)
+ (modules lin_internal_tests_thread_ref lin_internal_tests_thread_conclist)
+ (package multicoretests)
+ (flags (:standard -w -27))
+ (libraries lin_internal_tests_common qcheck-lin.thread)
+ (action (run %{test} --verbose))
+)
+
+(test
+ (name lin_internal_tests_effect)
+ (modules lin_internal_tests_effect)
+ (package multicoretests)
+ (flags (:standard -w -27))
+ (libraries lin_internal_tests_common qcheck-lin.effect)
+  ; (action (run ./%{deps} --verbose))
+ (action (progn))
+)

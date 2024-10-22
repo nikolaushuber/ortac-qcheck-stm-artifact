@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "docs/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "pascutto"
+    labels:
+      - "dependencies"
+      - "no-changelog-needed"
