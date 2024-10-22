@@ -53,11 +53,6 @@ test_varray:
 .PHONY: test
 test: test_bitv test_varray test_hashtbl
 
-.PHONY: compile_doc
-compile_doc:
-	cd ortac-0.4.0; \
-	dune build @doc --only-packages=ortac-qcheck-stm
-
 .PHONY: doc
-doc: compile_doc
-	open ./ortac-0.4.0/_build/default/_doc/_html/ortac-qcheck-stm/index.html
+doc:
+	open ./doc/_html/ortac-qcheck-stm/index.html
