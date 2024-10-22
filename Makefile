@@ -13,10 +13,10 @@ endif
 install: install_opam
 	opam exec -- opam switch create . --empty
 	opam exec -- opam install ocaml.4.14.2 --yes
-	opam exec -- opam install zarith --depext-only --yes
+	opam exec -- opam install zarith.1.12 --depext-only --yes
 	opam exec -- opam install dune.3.16.0 --yes
-	dune build
-	dune install
+	opam exec -- dune build
+	opam exec -- dune install
 
 .PHONY: clean
 clean:
