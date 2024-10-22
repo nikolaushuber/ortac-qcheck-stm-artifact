@@ -8,7 +8,6 @@
 *.cmxs
 *.a
 *.so
-META
 
 Makefile.config
 Makefile.packages
