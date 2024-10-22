@@ -4,30 +4,24 @@ OPAM := $(shell opam --version 2>/dev/null)
 install_opam:
 ifndef OPAM
 	sudo sh opam_install.sh; \
-	opam init
+	opam init -a -c 4.14.2
 else
 	@echo "opam already installed"
 endif
 
-_opam: install_opam
-	opam switch create . --empty
-	opam pin add varray varray-0.2 --kind=path -n
-	opam pin add bitv bitv-2.0 --kind=path -n
-	opam pin add ortac-core ortac-0.4.0 --kind=path -n
-	opam pin add ortac-qcheck-stm ortac-0.4.0 --kind=path -n
-	opam pin add ortac-runtime ortac-0.4.0 --kind=path -n
-	opam pin add ortac-runtime-qcheck-stm ortac-0.4.0 --kind=path -n
-
 .PHONY: install
-install: _opam
-	opam install ./artifact --locked --yes --with-doc
+install: install_opam
+	opam exec -- opam switch create . --empty
+	opam exec -- opam install ocaml.4.14.2 --yes
+	opam exec -- opam install zarith --depext-only --yes
+	opam exec -- opam install dune.3.16.0 --yes
+	dune build
+	dune install
 
 .PHONY: clean
 clean:
 	rm -rf _opam
 	rm -rf _build
-	rm -rf artifact/_build
-	rm -rf ortac-0.4.0/_build
 
 .PHONY: test_bitv
 test_bitv:
