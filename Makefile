@@ -1,5 +1,10 @@
 OPAM := $(shell opam --version 2>/dev/null)
 
+.PHONY: default
+default:
+	@echo "Please select one of the provided targets (install, test, doc)"
+
+
 .PHONY: install_opam
 install_opam:
 ifndef OPAM
@@ -38,14 +43,26 @@ test_bitv:
 
 .PHONY: test_hashtbl
 test_hashtbl:
-	opam exec -- hashtbl_tests --seed 104275608 -v
+	opam exec -- hashtbl_spec_tests --seed 104275608 -v
 
 .PHONY: test_varray
 test_varray:
 	opam exec -- varray_spec_tests --seed 225655242 -v
 
+.PHONY: test_array
+test_array:
+	opam exec -- array_spec_tests -v
+
+.PHONY: test_stack
+test_stack:
+	opam exec -- stack_spec_tests -v
+
+.PHONY: test_queue
+test_queue:
+	opam exec -- queue_spec_tests -v
+
 .PHONY: test
-test: test_bitv test_varray test_hashtbl
+test: test_bitv test_varray test_hashtbl test_array test_stack test_queue
 
 .PHONY: doc
 doc:
