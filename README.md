@@ -105,9 +105,9 @@ In case any `unknown command` errors occur, you may first have to run
 In the standard configuration the test environment runs multiple instances of
 the generated tests sequentially in the same process. This means, that if a
 test crashes, the surrounding test process is also killed. To instruct the
-runtime to instead execute all tests in separate process, you can set the
+runtime to instead execute all tests in a separate process, you can set the
 environment variable `ORTAC_QCHECK_STM_TIMEOUT=x`, which automatically runs
-each test in separate process with a timeout of `x` seconds:
+each test in a separate process with a timeout of `x` seconds:
 
 ```
 ORTAC_QCHECK_STM_TIMEOUT=10 queue_spec_tests -v
@@ -120,7 +120,7 @@ For more information on this, please consult the documentation.
 No errors were found in `Array`, `Stack`, and `Queue` while running the
 generated tests for these modules.
 
-The `Hashtbl` test revealed an interested inconsistency between the
+The `Hashtbl` test revealed an interesting inconsistency between the
 documentation and the provided contract. `Hashtbl.create` takes as input an
 initial guess of the expected size of the table. As it turns out, this initial
 guess can be negative. An issue
@@ -132,7 +132,7 @@ pushing and popping from different ends of the array. The issue
 [has been raised](https://github.com/art-w/varray/issues/2) on the project
 repository.
 
-For `Bitv` the generated tests revealed two different kinds of errors. For the
+For `Bitv` the generated test revealed two different kinds of errors. For the
 `fill`, `blit`, and `sub` functions the index-bound check can overflow, which
 may result in a segmentation fault. The issue
 [has been raised](https://github.com/backtracking/bitv/issues/31) and
@@ -141,7 +141,7 @@ may result in a segmentation fault. The issue
 vectors, which is inconsistent as zero-length vectors can be shifted
 successfully. The issue
 [has been raised](https://github.com/backtracking/bitv/issues/33) on the project
-repository.
+repository and [fixed](https://github.com/backtracking/bitv/commit/f30e7a8854bf2a7dbb5e50958c5ebd8c2011c5cf). 
 
 ## Documentation
 
