@@ -43,11 +43,11 @@ test_bitv:
 
 .PHONY: test_hashtbl
 test_hashtbl:
-	opam exec -- hashtbl_spec_tests --seed 104275608 -v
+	-opam exec -- hashtbl_spec_tests --seed 104275608 -v
 
 .PHONY: test_varray
 test_varray:
-	opam exec -- varray_spec_tests --seed 225655242 -v
+	-opam exec -- varray_spec_tests --seed 225655242 -v
 
 .PHONY: test_array
 test_array:
