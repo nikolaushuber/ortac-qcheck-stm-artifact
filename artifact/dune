@@ -1,12 +1,12 @@
 (library
- (name hashtbl)
- (modules hashtbl))
+ (name hashtbl_spec)
+ (modules hashtbl_spec))
 
 (rule
  (alias runtest)
  (deps
   (package ortac-qcheck-stm))
- (targets hashtbl_tests.ml)
+ (targets hashtbl_spec_tests.ml)
  (action
   (setenv
    ORTAC_ONLY_PLUGIN
@@ -16,16 +16,16 @@
     (run
      ortac
      qcheck-stm
-     %{dep:hashtbl.mli}
-     %{dep:hashtbl_config.ml}
+     %{dep:hashtbl_spec.mli}
+     %{dep:hashtbl_spec_config.ml}
      --quiet)))))
 
 (executable
- (public_name hashtbl_tests)
+ (public_name hashtbl_spec_tests)
  (package artifact)
- (modules hashtbl_tests)
+ (modules hashtbl_spec_tests)
  (libraries
-  hashtbl
+  hashtbl_spec
   qcheck-stm.stm
   qcheck-stm.sequential
   qcheck-multicoretests-util
@@ -93,6 +93,105 @@
  (package artifact)
  (libraries
   bitv_spec
+  qcheck-stm.stm
+  qcheck-stm.sequential
+  qcheck-multicoretests-util
+  ortac-runtime-qcheck-stm))
+
+(library
+ (name array_spec)
+ (modules array_spec))
+
+(rule
+ (alias runtest)
+ (deps
+  (package ortac-qcheck-stm))
+ (targets array_spec_tests.ml)
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (with-stdout-to
+    %{targets}
+    (run
+     ortac
+     qcheck-stm
+     %{dep:array_spec.mli}
+     %{dep:array_spec_config.ml}
+     --quiet)))))
+
+(executable
+ (public_name array_spec_tests)
+ (modules array_spec_tests)
+ (package artifact)
+ (libraries
+  array_spec
+  qcheck-stm.stm
+  qcheck-stm.sequential
+  qcheck-multicoretests-util
+  ortac-runtime-qcheck-stm))
+
+(library
+ (name stack_spec)
+ (modules stack_spec))
+
+(rule
+ (alias runtest)
+ (deps
+  (package ortac-qcheck-stm))
+ (targets stack_spec_tests.ml)
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (with-stdout-to
+    %{targets}
+    (run
+     ortac
+     qcheck-stm
+     %{dep:stack_spec.mli}
+     %{dep:stack_spec_config.ml}
+     --quiet)))))
+
+(executable
+ (public_name stack_spec_tests)
+ (modules stack_spec_tests)
+ (package artifact)
+ (libraries
+  stack_spec
+  qcheck-stm.stm
+  qcheck-stm.sequential
+  qcheck-multicoretests-util
+  ortac-runtime-qcheck-stm))
+
+(library
+ (name queue_spec)
+ (modules queue_spec))
+
+(rule
+ (alias runtest)
+ (deps
+  (package ortac-qcheck-stm))
+ (targets queue_spec_tests.ml)
+ (action
+  (setenv
+   ORTAC_ONLY_PLUGIN
+   qcheck-stm
+   (with-stdout-to
+    %{targets}
+    (run
+     ortac
+     qcheck-stm
+     %{dep:queue_spec.mli}
+     %{dep:queue_spec_config.ml}
+     --quiet)))))
+
+(executable
+ (public_name queue_spec_tests)
+ (modules queue_spec_tests)
+ (package artifact)
+ (libraries
+  queue_spec
   qcheck-stm.stm
   qcheck-stm.sequential
   qcheck-multicoretests-util
