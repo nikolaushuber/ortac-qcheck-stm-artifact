@@ -1,5 +1,7 @@
 # Ortac/QCheck-STM artifact
 
+[![DOI](https://zenodo.org/badge/873752432.svg)](https://doi.org/10.5281/zenodo.13988145)
+
 [Ortac](https://github.com/ocaml-gospel/ortac) is a tool for performing runtime
 assertion checking of OCaml modules. By consuming
 [Gospel](https://github.com/ocaml-gospel/gospel) annotated module signatures
